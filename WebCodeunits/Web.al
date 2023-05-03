@@ -1,3 +1,6 @@
+/// <summary>
+/// Communication to WooCommerce
+/// </summary>
 codeunit 50133 WebOut
 {
     procedure NewItem()
@@ -14,7 +17,9 @@ codeunit 50133 WebOut
 
     end;
 }
-
+/// <summary>
+/// Communication from WooCommerce
+/// </summary>
 codeunit 50134 WebIn
 {
     procedure NewCustomer()
