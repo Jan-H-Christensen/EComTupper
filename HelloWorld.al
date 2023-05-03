@@ -6,7 +6,7 @@ pageextension 50133 TestExt extends "Customer List"
 {
     trigger OnOpenPage();
     var
-        test: Record 21;
+        test: Record 23;
     begin
         Message('App published:');
     end;
