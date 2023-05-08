@@ -25,6 +25,24 @@ table 50133 "Tupper Sales Table"
             OptionCaption = 'Product by sales, Product by Profit';
             OptionMembers = "Product by sales","Product by Profit";
         }
+        field(30; "Start Date"; Date)
+        {
+            Caption = 'Start Date';
+
+            trigger OnValidate()
+            begin
+                TestField("Start Date");
+            end;
+        }
+        field(40; "End Date"; Date)
+        {
+            Caption = 'End Date';
+
+            trigger OnValidate()
+            begin
+                TestField("End Date");
+            end;
+        }
     }
 
 

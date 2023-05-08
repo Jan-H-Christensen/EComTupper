@@ -37,6 +37,16 @@ page 50133 "Tupper Sales Charts"
                         buffer.Update(CurrPage.Chart);
                     end;
                 }
+
+                field("Start Date"; rec."Start Date")
+                {
+                    ApplicationArea = All;
+                }
+
+                field("End Date"; rec."End Date")
+                {
+                    ApplicationArea = All;
+                }
             }
             group(ChartToShow)
             {
