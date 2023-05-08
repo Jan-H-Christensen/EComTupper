@@ -118,4 +118,6 @@ page 50133 "Tupper Sales Charts"
         test: Record 27;
         testOrder: Record 37;
         chart: Record 760;
+        charts: Record 770;
+        chartss: Record 1382;
 }
