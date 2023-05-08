@@ -8,19 +8,4 @@ tableextension 50134 ItemExtent extends Item
             DataClassification = ToBeClassified;
         }
     }
-
-
-    trigger OnAfterInsert()
-    var
-        WebOutCode: Codeunit WebOut;
-    begin
-        WebOutCode.NewItem("No.");
-    end;
-
-    trigger OnAfterModify()
-    var
-        WebOutCode: Codeunit WebOut;
-    begin
-        WebOutCode.ItenStock("No.");
-    end;
 }
