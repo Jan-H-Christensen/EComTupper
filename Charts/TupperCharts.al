@@ -15,11 +15,29 @@ page 50133 "Tupper Sales Charts"
                 field("Charts"; Rec.Charts)
                 {
                     ApplicationArea = All;
+
+                    trigger OnValidate()
+                    var
+                        buffer: Record "Business Chart Buffer";
+                        ChartMgt: Codeunit 50137;
+                    begin
+                        ChartMgt.GenerateData(buffer, Rec);
+                        buffer.Update(CurrPage.Chart);
+                    end;
                 }
 
                 field("Show Profit or Sales"; Rec."Show Profit or Sales")
                 {
                     ApplicationArea = All;
+
+                    trigger OnValidate()
+                    var
+                        buffer: Record "Business Chart Buffer";
+                        ChartMgt: Codeunit 50137;
+                    begin
+                        ChartMgt.GenerateData(buffer, Rec);
+                        buffer.Update(CurrPage.Chart);
+                    end;
                 }
             }
             group(ChartToShow)
