@@ -1,12 +1,9 @@
 page 50133 "Tupper Sales Charts"
 {
-    PageType = Card;
-    ApplicationArea = All;
-    UsageCategory = Administration;
-    SourceTable = "Sales Line";
+
     Caption = 'Tupper Sales Charts';
-    DeleteAllowed = false;
-    InsertAllowed = false;
+    PageType = Card;
+    SourceTable = "Tupper Sales Table";
 
     layout
     {
@@ -15,12 +12,12 @@ page 50133 "Tupper Sales Charts"
             group(General)
             {
                 Caption = 'General';
-                field(Product; Rec."No.")
+                field("Charts"; Rec.Charts)
                 {
                     ApplicationArea = All;
                 }
 
-                field(ProdúctName; Rec.Description)
+                field("Show Profit or Sales"; Rec."Show Profit or Sales")
                 {
                     ApplicationArea = All;
                 }
@@ -31,36 +28,66 @@ page 50133 "Tupper Sales Charts"
                 usercontrol(Chart; "Microsoft.Dynamics.Nav.Client.BusinessChart")
                 {
                     ApplicationArea = All;
+
+                    trigger DataPointClicked(point: JsonObject)
+                    var
+                        JsonText: Text;
+                    begin
+                        point.WriteTo(JsonText);
+                        Message(JsonText);
+                    end;
+
                     trigger AddInReady()
                     var
                         buffer: Record "Business Chart Buffer";
-                        item: Record Item;
+                        chartsToShow: Record 50133;
+                        item: Record Customer;
                         sales: Record "Sales Line";
                         i: Integer;
                     begin
-                        buffer.Initialize();
-                        // index 0
-                        buffer.AddMeasure('Qty', 1, buffer."Data Type"::Integer, buffer."Chart Type"::Column);
-                        buffer.SetXAxis('Description', buffer."Data Type"::String);
+                        with buffer do begin
+                            Initialize();
+                            //     buffer.AddMeasure('Qty', 1, buffer."Data Type"::Integer, buffer."Chart Type"::Column);
+                            if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
+                                AddMeasure('Product by Profit', 1, "Data Type"::Decimal, chartsToShow.Charts)
+                            else
+                                AddMeasure('Product by Sales', 1, "Data Type"::Decimal, chartsToShow.Charts);
 
-                        if sales.FindFirst() then
-                            repeat
+                            SetXAxis('Product', "Data Type"::String);
 
-                                if sales."Quantity Shipped" <> 0 then begin
-                                    buffer.AddColumn(sales.Description);
-                                    buffer.SetValueByIndex(0, i, sales."Amount Including VAT");
-                                    buffer.SetValueByIndex(0, i, sales."Quantity Shipped"); // 0 based not 1 like normal in AL 
-                                    i += 1
-                                end;
-                            until sales.Next() = 0;
-                        buffer.Update(CurrPage.Chart);
+                            if item.FindSet() then begin
+                                repeat
+                                    item.CalcFields("Balance (LCY)");
+                                    item.CalcFields(Balance);
+
+                                    AddColumn((item."No."));
+                                    if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
+                                        SetValueByIndex(0, i, item.Balance)
+                                    else
+                                        SetValueByIndex(0, i, item."Balance (LCY)");
+                                    i += 1;
+                                until (item.Next() = 0) OR (i >= 10);
+                                Update(CurrPage.Chart);
+                            end;
+                        end;
                     end;
                 }
             }
         }
     }
 
+    // trigger OnOpenPage()
+    // begin
+    //     if not GET(UserId) then begin
+    //         "User ID" := UserId;
+    //         Insert;
+    //     end;
+    //     FilterGroup(2);
+    //     SetRange("UserID", UserId);
+    //     FilterGroup(0);
+    // end;
     var
         test: Record 27;
         testOrder: Record 37;
+        chart: Record 760;
 }
