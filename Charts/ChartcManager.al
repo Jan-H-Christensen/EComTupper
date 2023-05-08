@@ -41,6 +41,13 @@ codeunit 50137 "Charts Manager"
         end;
     end;
 
+    procedure DrillDown(itenNo: Text)
+    var
+        item: Record 27;
+    begin
+        item.SetRange("No.", itenNo);
+        Page.Run(Page::"Item List", item);
+    end;
 }
 
 // var
