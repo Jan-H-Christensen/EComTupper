@@ -12,4 +12,28 @@ pageextension 50135 ItemCardExtends extends "Item Card"
             }
         }
     }
+    actions
+    {
+        addlast(Functions)
+        {
+            action(WooCommerce)
+            {
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                ApplicationArea = Basic, Suite;
+                Caption = 'WooCommerce upload';
+                Image = UpdateShipment;
+                ToolTip = 'Uploade current item to woocommerce';
+
+                trigger OnAction()
+                var
+                    webout: Codeunit WebOut;
+                begin
+                    webout.NewItem(Rec."No.");
+                end;
+            }
+        }
+    }
 }
