@@ -47,17 +47,23 @@ codeunit 50133 WebOut
 /// </summary>
 codeunit 50134 WebIn
 {
-    procedure NewCustomer()
+    procedure NewCustomer(response: Text)
     var
-        myInt: Integer;
+        Email: Codeunit EmailController;
+        Json: Codeunit JsonContoller;
+        CusId: Integer;
     begin
 
+
+        Email.NewCusEmail(Format(CusId));
     end;
 
-    procedure NewSalesOrder()
+    procedure NewSalesOrder(response: Text)
     var
-        myInt: Integer;
+        Email: Codeunit EmailController;
+        Json: Codeunit JsonContoller;
+        OrderId: Integer;
     begin
-
+        Email.NewOrderEmail(Format(OrderId));
     end;
 }
