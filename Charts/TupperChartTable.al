@@ -15,8 +15,8 @@ table 50133 "Tupper Sales Table"
         {
             Caption = 'Charts type';
             DataClassification = ToBeClassified;
-            OptionMembers = Point,,Bubble,Line,,StepLine,,,,,StackedColumn,StackedColumn100,Area,Column;
-            OptionCaption = 'Point,, Bubble, Line,, StepLine,,,,, StackedColumn,StackedColumn100, Area,Column';
+            OptionMembers = Point,,,Line,,StepLine,,,,,Column,,,,,"Area",,Pie,Doughnut;
+            OptionCaption = 'Point,,,Line,,StepLine,,,,,Column,,,,,Area,,Pie,Doughnut';
         }
 
         field(20; "Show Profit or Sales"; Option)
