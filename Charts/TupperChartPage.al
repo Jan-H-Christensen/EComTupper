@@ -49,9 +49,10 @@ page 50134 "Tupper Sales Chart"
     var
         ChartMgt: Codeunit 50137;
         buffer: Record "Business Chart Buffer";
+
     local procedure UpdateChart()
     begin
-        ChartMgt.GenerateData(Rec);
+        //ChartMgt.GenerateData(Rec);
         buffer.Update(CurrPage.TupperCharts);
     end;
 }
