@@ -12,9 +12,6 @@ codeunit 50137 "Charts Manager"
         sales: Record "Sales Line";
         i: Integer;
     begin
-        // chartsToShow.SetRange("User ID", UserId);
-        // if not chartsToShow.FindFirst() then
-        //     Page.RunModal(Page::"Tupper Sales Charts");
 
         with buffer do begin
             Initialize();
@@ -49,26 +46,3 @@ codeunit 50137 "Charts Manager"
         Page.Run(Page::"Item List", item);
     end;
 }
-
-// var
-//     buffer: Record "Business Chart Buffer" temporary;
-//     item: Record Item;
-//     sales: Record "Sales Line";
-//     i: Integer;
-// begin
-//     buffer.Initialize();
-//     i := 0;
-//     buffer.AddMeasure('Qty', 1, buffer."Data Type"::Integer, buffer."Chart Type"::Column);
-//     buffer.SetXAxis('Description', buffer."Data Type"::String);
-
-//     if sales.FindFirst() then
-//         repeat
-
-//             if sales."Quantity Shipped" <> 0 then begin
-//                 buffer.AddColumn(sales."No.");
-//                 buffer.SetValueByIndex(0, i, sales."Quantity Shipped"); // 0 based not 1 like normal in AL 
-//                 i += 1
-//             end;
-//         until (sales.Next() = 0) OR (i >= 10);
-//     buffer.Update(CurrPage.Chart);
-// end;
