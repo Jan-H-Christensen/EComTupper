@@ -63,7 +63,9 @@ codeunit 50134 WebIn
         Email: Codeunit EmailController;
         Json: Codeunit JsonContoller;
         OrderId: Integer;
+        CusId: Text;
     begin
         Email.NewOrderEmail(Format(OrderId));
+        NewCustomer(CusId);
     end;
 }
