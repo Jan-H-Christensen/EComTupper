@@ -10,7 +10,7 @@ page 50134 "Tupper Sales Chart"
         {
             usercontrol(TupperCharts; "Microsoft.Dynamics.Nav.Client.BusinessChart")
             {
-                ApplicationArea = All;
+                ApplicationArea = Basic, Suite;
 
                 trigger AddInReady()
                 begin
@@ -48,11 +48,11 @@ page 50134 "Tupper Sales Chart"
     }
     var
         ChartMgt: Codeunit 50137;
-        buffer: Record "Business Chart Buffer";
+        tupper: Record 50133;
 
     local procedure UpdateChart()
     begin
-        //ChartMgt.GenerateData(Rec);
-        buffer.Update(CurrPage.TupperCharts);
+        ChartMgt.GenerateData(Rec, tupper);
+        Rec.Update(CurrPage.TupperCharts);
     end;
 }
