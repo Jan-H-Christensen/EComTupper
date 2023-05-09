@@ -47,18 +47,18 @@ codeunit 50133 WebOut
 /// </summary>
 codeunit 50134 WebIn
 {
-    procedure NewCustomer(response: Text)
+    local procedure NewCustomer(Id: Text)
     var
         Email: Codeunit EmailController;
         Json: Codeunit JsonContoller;
-        CusId: Integer;
+        CusId: Code[20];
     begin
+        CusId := format(Id);
 
-
-        Email.NewCusEmail(Format(CusId));
+        Email.NewCusEmail(CusId);
     end;
 
-    procedure NewSalesOrder(response: Text)
+    procedure NewSalesOrder(test: Text)
     var
         Email: Codeunit EmailController;
         Json: Codeunit JsonContoller;
