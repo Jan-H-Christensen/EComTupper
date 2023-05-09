@@ -10,11 +10,15 @@ codeunit 50137 "Charts Manager"
     var
         item: Record 27;
         sales: Record "Sales Line";
+        catogory: Text;
         i: Integer;
     begin
-
+        catogory := '';
         with buffer do begin
             Initialize();
+
+            item.SetFilter("Item Category Code", catogory);
+            sales.SetRange("Shipment Date", chartsToShow."Start Date", chartsToShow."End Date");
 
             if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
                 AddMeasure('Product by Profit', 1, "Data Type"::Decimal, chartsToShow.Charts)
@@ -25,18 +29,24 @@ codeunit 50137 "Charts Manager"
 
             if item.FindSet() then begin
                 repeat
-
-
-                    AddColumn((item."No."));
-                    if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
-                        SetValueByIndex(0, i, item."Unit Price")
-                    else
-                        SetValueByIndex(0, i, item."Unit Cost");
-                    i += 1;
+                    if sales.FindSet() then begin
+                        repeat
+                            if sales."No." = item."No." then begin
+                                AddColumn((item."No."));
+                                if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
+                                    SetValueByIndex(0, i, item."Unit Price")
+                                else
+                                    SetValueByIndex(0, i, item."Unit Cost");
+                                i += 1;
+                            end;
+                        until sales.Next() = 0;
+                    end;
                 until (item.Next() = 0) OR (i >= 10);
             end;
         end;
     end;
+
+
 
     procedure DrillDown(itenNo: Text)
     var

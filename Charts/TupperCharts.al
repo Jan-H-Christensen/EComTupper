@@ -1,6 +1,6 @@
 page 50133 "Tupper Sales Charts"
 {
-
+    ApplicationArea = All;
     Caption = 'Tupper Sales Charts';
     PageType = Card;
     SourceTable = "Tupper Sales Table";
@@ -72,11 +72,12 @@ page 50133 "Tupper Sales Charts"
     var
         buffer: Record "Business Chart Buffer";
         ChartMgt: Codeunit 50137;
-    // test: Record 27;
-    // testOrder: Record 37;
-    // chart: Record 760;
-    // charts: Record 770;
-    // chartss: Record 1382;
+        // test: Record 27;
+        // testOrder: Record 37;
+        // chart: Record 760;
+        // charts: Record 770;
+        // chartss: Record 1382;
+        pageesss: Page "Sales Order";
 
     local procedure UpdateChart()
     begin
