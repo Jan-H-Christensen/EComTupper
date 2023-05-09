@@ -53,8 +53,6 @@ codeunit 50134 WebIn
         Json: Codeunit JsonContoller;
         CusId: Integer;
     begin
-
-
         Email.NewCusEmail(Format(CusId));
     end;
 
