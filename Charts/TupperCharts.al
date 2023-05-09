@@ -17,11 +17,8 @@ page 50133 "Tupper Sales Charts"
                     ApplicationArea = All;
 
                     trigger OnValidate()
-                    var
-                        buffer: Record "Business Chart Buffer";
                     begin
-                        ChartMgt.GenerateData(buffer, Rec);
-                        buffer.Update(CurrPage.Chart);
+                        UpdateChart();
                     end;
                 }
 
@@ -30,11 +27,8 @@ page 50133 "Tupper Sales Charts"
                     ApplicationArea = All;
 
                     trigger OnValidate()
-                    var
-                        buffer: Record "Business Chart Buffer";
                     begin
-                        ChartMgt.GenerateData(buffer, Rec);
-                        buffer.Update(CurrPage.Chart);
+                        UpdateChart();
                     end;
                 }
 
@@ -68,66 +62,25 @@ page 50133 "Tupper Sales Charts"
                     end;
 
                     trigger AddInReady()
-                    var
-                        buffer: Record "Business Chart Buffer";
-                        ChartMgt: Codeunit 50137;
                     begin
-                        ChartMgt.GenerateData(buffer, Rec);
-                        buffer.Update(CurrPage.Chart);
+                        UpdateChart();
                     end;
-                    // var
-                    //     buffer: Record "Business Chart Buffer";
-                    //     chartsToShow: Record 50133;
-                    //     item: Record Customer;
-                    //     sales: Record "Sales Line";
-                    //     i: Integer;
-                    // begin
-                    //     with buffer do begin
-                    //         Initialize();
-                    //         //     buffer.AddMeasure('Qty', 1, buffer."Data Type"::Integer, buffer."Chart Type"::Column);
-                    //         if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
-                    //             AddMeasure('Product by Profit', 1, "Data Type"::Decimal, chartsToShow.Charts)
-                    //         else
-                    //             AddMeasure('Product by Sales', 1, "Data Type"::Decimal, chartsToShow.Charts);
-
-                    //         SetXAxis('Product', "Data Type"::String);
-
-                    //         if item.FindSet() then begin
-                    //             repeat
-                    //                 item.CalcFields("Balance (LCY)");
-                    //                 item.CalcFields(Balance);
-
-                    //                 AddColumn((item."No."));
-                    //                 if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
-                    //                     SetValueByIndex(0, i, item.Balance)
-                    //                 else
-                    //                     SetValueByIndex(0, i, item."Balance (LCY)");
-                    //                 i += 1;
-                    //             until (item.Next() = 0) OR (i >= 10);
-                    //             Update(CurrPage.Chart);
-                    //         end;
-                    //     end;
-                    // end;
                 }
             }
         }
     }
-
-    // trigger OnOpenPage()
-    // begin
-    //     if not GET(UserId) then begin
-    //         "User ID" := UserId;
-    //         Insert;
-    //     end;
-    //     FilterGroup(2);
-    //     SetRange("UserID", UserId);
-    //     FilterGroup(0);
-    // end;
     var
+        buffer: Record "Business Chart Buffer";
         ChartMgt: Codeunit 50137;
-        test: Record 27;
-        testOrder: Record 37;
-        chart: Record 760;
-        charts: Record 770;
-        chartss: Record 1382;
+    // test: Record 27;
+    // testOrder: Record 37;
+    // chart: Record 760;
+    // charts: Record 770;
+    // chartss: Record 1382;
+
+    local procedure UpdateChart()
+    begin
+        ChartMgt.GenerateData(buffer, Rec);
+        buffer.Update(CurrPage.Chart);
+    end;
 }
