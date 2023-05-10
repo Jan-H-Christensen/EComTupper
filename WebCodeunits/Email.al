@@ -11,7 +11,7 @@ codeunit 50135 EmailController
         cr: Char;
     begin
         Custable.SetFilter("No.", cusId);
-        Receiver := 'rogengell@hotmail.com';
+        Receiver := 'j_h_christensen@t-online.de';
 
         Subject := 'Project Over Deadline';
 
@@ -21,7 +21,7 @@ codeunit 50135 EmailController
 
         if not (Body = '') then begin
             EmailMessage.Create(Receiver, Subject, Body);
-            Email.Send(EmailMessage, "Email Scenario"::Default);
+            Email.Send(EmailMessage, "Email Scenario"::"New Customer");
         end;
     end;
 
@@ -36,18 +36,31 @@ codeunit 50135 EmailController
         cr: Char;
     begin
         OrderTable.SetFilter("No.", orderId);
-
-        Receiver := 'rogengell@hotmail.com';
+        //'rogengell@hotmail.com'
+        Receiver := 'j_h_christensen@t-online.de';
 
         Subject := 'Project Over Deadline';
 
-        Body := '';
+        Body := 'Test';
 
         cr := 13; //Line shift Format(cr);
 
         if not (Body = '') then begin
             EmailMessage.Create(Receiver, Subject, Body);
-            Email.Send(EmailMessage, "Email Scenario"::Default);
+            Email.Send(EmailMessage, "Email Scenario"::"New Order");
         end;
     end;
+}
+
+enumextension 50133 "My Email Scenarios" extends "Email Scenario"
+{
+    value(50133; "New Order")
+    {
+        Caption = 'New Order';
+    }
+
+    value(50134; "New Customer")
+    {
+        Caption = 'New Customer';
+    }
 }

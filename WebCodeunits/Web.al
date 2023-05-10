@@ -14,24 +14,33 @@ codeunit 50133 WebOut
         catagory: JsonArray;
         image: JsonArray;
         sender: Text;
+        Base24Helper: Codeunit "Base64 Convert";
+        authent: Text;
+        test: Text;
     begin
+
+        authent := StrSubstNo('ck_5b6a1f6ff1aadf23f3f2674036b81b33572266ed:cs_900edb7894eef43a5e7e332ba0b3a487d3becd0a');
+        authent := Base24Helper.ToBase64(authent);
+        authent := StrSubstNo('Basic %1', authent);
+
         ItemTable.SetFilter("No.", itemId);
         ItemTable.FindFirst();
         MainObject.Add('name', ItemTable.Description);
-        MainObject.Add('type', ItemTable."Item Category Code");
-        MainObject.Add('regular_price', ItemTable."Unit Price");
+        MainObject.Add('regular_price', Format(ItemTable."Unit Price"));
         MainObject.Add('description', ItemTable.ItemDeskription);
         MainObject.Add('short_description', ItemTable.ItemDeskription);
-        MainObject.Add('categories', catagory);
-        MainObject.Add('images', image);
         MainObject.WriteTo(sender);
+
+        Message(sender);
 
         Content.WriteFrom(sender);
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
-        client.DefaultRequestHeaders.Add('Authorization', 'ck_f575283e6cf6e279f6b413416dee5daf86c275fc:cs_c7decada6b4a9ed190dfc1993db4bab3b21acd42');
-        Client.Post('http://localhost/wordpress/wp-json/wc/v2/products', Content, Response)
+        client.DefaultRequestHeaders.Add('Authorization', authent);
+        Client.Post('http://192.168.96.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+        Response.Content.ReadAs(test);
+        Message(test);
     end;
 
     procedure ItenStock(Info: Text)
@@ -41,17 +50,21 @@ codeunit 50133 WebOut
         Response: HttpResponseMessage;
         Content: HttpContent;
         contentHeaders: HttpHeaders;
+        Base24Helper: Codeunit "Base64 Convert";
+        authent: Text;
     begin
 
-
+        authent := StrSubstNo('ck_5b6a1f6ff1aadf23f3f2674036b81b33572266ed:cs_900edb7894eef43a5e7e332ba0b3a487d3becd0a');
+        authent := Base24Helper.ToBase64(authent);
+        authent := StrSubstNo('Basic %1', authent);
         /// Json
 
         Content.WriteFrom('Hello');
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
-        client.DefaultRequestHeaders.Add('Authorization', 'ck_f575283e6cf6e279f6b413416dee5daf86c275fc:cs_c7decada6b4a9ed190dfc1993db4bab3b21acd42');
-        Client.Post('http://localhost/wordpress/wp-json/wc/v2/products/', Content, Response)
+        client.DefaultRequestHeaders.Add('Authorization', authent);
+        Client.Post('http://192.168.96.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
     end;
 }
 /// <summary>

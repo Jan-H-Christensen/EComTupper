@@ -1,7 +1,7 @@
 page 50134 "Tupper Sales Chart"
 {
     Caption = 'Tupper Sales Chart';
-    PageType = Card;
+    PageType = CardPart;
     SourceTable = "Business Chart Buffer";
 
     layout
@@ -43,6 +43,21 @@ page 50134 "Tupper Sales Chart"
                     UpdateChart();
                 end;
             }
+
+            action("Setup")
+            {
+                Promoted = true;
+                PromotedCategory = Process;
+                ApplicationArea = All;
+                Caption = 'Setup';
+                Image = ServiceOrderSetup;
+
+                trigger OnAction()
+                begin
+                    Page.RunModal(Page::"Sales Order");
+                    UpdateChart();
+                end;
+            }
         }
     }
     var
@@ -55,8 +70,8 @@ page 50134 "Tupper Sales Chart"
         Rec.Update(CurrPage.TupperCharts);
     end;
 
-    // trigger OnOpenPage()
-    // begin
-    //     UpdateChart();
-    // end;
+    trigger OnOpenPage()
+    begin
+        UpdateChart();
+    end;
 }

@@ -35,11 +35,21 @@ page 50133 "Tupper Sales Charts"
                 field("Start Date"; rec."Start Date")
                 {
                     ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        UpdateChart();
+                    end;
                 }
 
                 field("End Date"; rec."End Date")
                 {
                     ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        UpdateChart();
+                    end;
                 }
             }
             group(ChartToShow)
@@ -69,6 +79,8 @@ page 50133 "Tupper Sales Charts"
             }
         }
     }
+
+
     var
         buffer: Record "Business Chart Buffer";
         ChartMgt: Codeunit 50137;
