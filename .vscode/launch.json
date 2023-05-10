@@ -12,7 +12,7 @@
             "server": "http://bc-container",
             "serverInstance": "BC",
             "authentication": "UserPassword",
-            "startupObjectId": 50133,
+            "startupObjectId": 50134,
             "startupObjectType": "Page",
             "breakOnError": "All",
             "schemaUpdateMode": "ForceSync",

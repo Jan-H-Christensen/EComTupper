@@ -11,7 +11,6 @@ page 50134 "Tupper Sales Chart"
             usercontrol(TupperCharts; "Microsoft.Dynamics.Nav.Client.BusinessChart")
             {
                 ApplicationArea = Basic, Suite;
-
                 trigger AddInReady()
                 begin
                     UpdateChart();
@@ -55,4 +54,9 @@ page 50134 "Tupper Sales Chart"
         ChartMgt.GenerateData(Rec, tupper);
         Rec.Update(CurrPage.TupperCharts);
     end;
+
+    // trigger OnOpenPage()
+    // begin
+    //     UpdateChart();
+    // end;
 }
