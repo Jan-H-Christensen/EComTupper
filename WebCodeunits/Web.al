@@ -3,26 +3,38 @@
 /// </summary>
 codeunit 50133 WebOut
 {
-    procedure NewItem(ItemId: Code[20])
+    procedure NewItem(itemId: Code[20])
     var
         ItemTable: Record Item;
         Client: HttpClient;
         Response: HttpResponseMessage;
         Content: HttpContent;
         contentHeaders: HttpHeaders;
+        MainObject: JsonObject;
+        catagory: JsonArray;
+        image: JsonArray;
+        sender: Text;
     begin
-        ItemTable.SetFilter("No.", ItemId);
+        ItemTable.SetFilter("No.", itemId);
+        ItemTable.FindFirst();
+        MainObject.Add('name', ItemTable.Description);
+        MainObject.Add('type', ItemTable."Item Category Code");
+        MainObject.Add('regular_price', ItemTable."Unit Price");
+        MainObject.Add('description', ItemTable.ItemDeskription);
+        MainObject.Add('short_description', ItemTable.ItemDeskription);
+        MainObject.Add('categories', catagory);
+        MainObject.Add('images', image);
+        MainObject.WriteTo(sender);
 
-        /// Json
-        Content.WriteFrom('Hello');
+        Content.WriteFrom(sender);
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
-        client.DefaultRequestHeaders.Add('User-Agent', 'Dynamics 365');
-        Client.Post('API Number', Content, Response)
+        client.DefaultRequestHeaders.Add('Authorization', 'ck_f575283e6cf6e279f6b413416dee5daf86c275fc:cs_c7decada6b4a9ed190dfc1993db4bab3b21acd42');
+        Client.Post('http://localhost/wordpress/wp-json/wc/v2/products', Content, Response)
     end;
 
-    procedure ItenStock(ItemId: Code[20])
+    procedure ItenStock(Info: Text)
     var
         ItemTable: Record Item;
         Client: HttpClient;
@@ -30,7 +42,7 @@ codeunit 50133 WebOut
         Content: HttpContent;
         contentHeaders: HttpHeaders;
     begin
-        ItemTable.SetFilter("No.", ItemId);
+
 
         /// Json
 
@@ -38,8 +50,8 @@ codeunit 50133 WebOut
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
-        client.DefaultRequestHeaders.Add('User-Agent', 'Dynamics 365');
-        Client.Post('API Number', Content, Response)
+        client.DefaultRequestHeaders.Add('Authorization', 'ck_f575283e6cf6e279f6b413416dee5daf86c275fc:cs_c7decada6b4a9ed190dfc1993db4bab3b21acd42');
+        Client.Post('http://localhost/wordpress/wp-json/wc/v2/products/', Content, Response)
     end;
 }
 /// <summary>
@@ -47,18 +59,35 @@ codeunit 50133 WebOut
 /// </summary>
 codeunit 50134 WebIn
 {
-    local procedure NewCustomer(Id: Text)
+    local procedure NewCustomer(Info: Text)
     var
+        CustTable: Record Customer;
         Email: Codeunit EmailController;
         Json: Codeunit JsonContoller;
-        CusId: Code[20];
+        MainJsonObject: JsonObject;
+        BillingJsonToken: JsonToken;
     begin
-        CusId := format(Id);
+        MainJsonObject.ReadFrom(Info);
 
-        Email.NewCusEmail(CusId);
+        CustTable.Init();
+        CustTable."No." := Json.getFileIdTextAsText(MainJsonObject, 'id');
+        CustTable."E-Mail" := Json.getFileIdTextAsText(MainJsonObject, 'email');
+        CustTable.Name := Json.getFileIdTextAsText(MainJsonObject, 'first_name') + ' ' + Json.getFileIdTextAsText(MainJsonObject, 'last_name');
+
+        MainJsonObject.Get('billing', BillingJsonToken);
+
+        CustTable.Address := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), '"address_1');
+        CustTable.County := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'country');
+        CustTable."Post Code" := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'postcode');
+        CustTable.City := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'city');
+        CustTable."Phone No." := json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'phone');
+
+        CustTable.Insert();
+
+        Email.NewCusEmail(CustTable."No.");
     end;
 
-    procedure NewSalesOrder(OrderInfo: Text)
+    procedure NewSalesOrder(Info: Text)
     var
         SalesHeaderRec: Record "Sales Header";
         SalesLineRec: Record "Sales Line";
@@ -72,23 +101,16 @@ codeunit 50134 WebIn
         ArryToken: JsonToken;
         OrderId: Integer;
         CusId: Text;
-        CustEmail: Text;
         TypeDate: Date;
         OrderDate: Text;
         ValQuant: Decimal;
     begin
-        MainJsonObject.ReadFrom(OrderInfo);
+        MainJsonObject.ReadFrom(Info);
         MainJsonObject.Get('billing', CostJsonToken);
-        CustEmail := Json.getFileIdTextAsText(CostJsonToken.AsObject(), 'email');
-
-        CustTable.SetFilter("E-Mail", CustEmail);
-        if NOT CustTable.FindSet() then begin
-            NewCustomer(CusId);
-            Email.NewOrderEmail(Format(OrderId));
-        end;
 
         SalesHeaderRec.Init();
-        CustTable.SetFilter("E-Mail", CustEmail);
+        CusId := json.getFileIdTextAsText(MainJsonObject, 'customer_id');
+        CustTable.SetFilter("No.", CusId);
         CustTable.FindFirst();
         SalesHeaderRec."Sell-to Customer Name" := CustTable.Name;
         SalesHeaderRec."Bill-to Customer No." := CustTable."No.";
@@ -129,6 +151,6 @@ codeunit 50134 WebIn
             SalesLineRec.Quantity := ValQuant;
             SalesLineRec.Insert();
         end;
-        Email.NewOrderEmail(OrderInfo);
+        Email.NewOrderEmail(SalesHeaderRec."No.");
     end;
 }
