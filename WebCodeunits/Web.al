@@ -125,7 +125,7 @@ codeunit 50134 WebIn
             SalesLineRec."Document No." := SalesHeaderRec."No.";
             SalesLineRec.Type := "Sales Line Type".FromInteger(2);
             SalesLineRec."No." := Json.getFileIdTextAsText(ArryToken.AsObject(), 'product_id');
-            Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quant'));
+            Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
             SalesLineRec.Insert();
         end;
