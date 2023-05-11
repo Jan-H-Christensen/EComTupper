@@ -11,12 +11,15 @@ codeunit 50133 WebOut
         Content: HttpContent;
         contentHeaders: HttpHeaders;
         MainObject: JsonObject;
+        jsonObjectResp: JsonObject;
         catagory: JsonArray;
         image: JsonArray;
         sender: Text;
+        json: Codeunit JsonContoller;
         Base24Helper: Codeunit "Base64 Convert";
         authent: Text;
-        test: Text;
+        RespText: Text;
+        WooComId: Code[20];
     begin
 
         authent := StrSubstNo('ck_5b6a1f6ff1aadf23f3f2674036b81b33572266ed:cs_900edb7894eef43a5e7e332ba0b3a487d3becd0a');
@@ -25,30 +28,30 @@ codeunit 50133 WebOut
 
         ItemTable.SetFilter("No.", itemId);
         ItemTable.FindFirst();
+        ItemTable.CalcFields(Inventory);
         MainObject.Add('name', ItemTable.Description);
         MainObject.Add('regular_price', Format(ItemTable."Unit Price"));
         MainObject.Add('description', ItemTable.ItemDeskription);
         MainObject.Add('short_description', ItemTable.ItemDeskription);
+        MainObject.Add('manage_stock', true);
+        MainObject.Add('stock_quantity', Format(ItemTable.Inventory));
         MainObject.WriteTo(sender);
-
-        Message(sender);
 
         Content.WriteFrom(sender);
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://192.168.96.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
 
-        Response.Content.ReadAs(test);
+        Response.Content.ReadAs(RespText);
+        jsonObjectResp.ReadFrom(RespText);
 
-        Message(test);
-
-        ItemTable.WoocommerceId := '';
+        ItemTable.WoocommerceId := json.getFileIdTextAsText(jsonObjectResp, 'id');
         ItemTable.Modify();
     end;
 
-    procedure ItemStock(Info: Text)
+    procedure ItemStock(Info: Code[20])
     var
         ItemTable: Record Item;
         Client: HttpClient;
@@ -56,20 +59,30 @@ codeunit 50133 WebOut
         Content: HttpContent;
         contentHeaders: HttpHeaders;
         Base24Helper: Codeunit "Base64 Convert";
+        JsonBody: JsonObject;
+        ItemId: Text;
         authent: Text;
+        sender: Text;
     begin
 
         authent := StrSubstNo('ck_5b6a1f6ff1aadf23f3f2674036b81b33572266ed:cs_900edb7894eef43a5e7e332ba0b3a487d3becd0a');
         authent := Base24Helper.ToBase64(authent);
         authent := StrSubstNo('Basic %1', authent);
         /// Json
+        ItemTable.SetFilter("No.", Info);
+        ItemTable.FindFirst();
 
-        Content.WriteFrom('Hello');
+        ItemId := ItemTable.WoocommerceId;
+        ItemTable.CalcFields(Inventory);
+        Message(Format(ItemTable.Inventory) + ' ' + Format(ItemId));
+        JsonBody.Add('stock_quantity', Format(ItemTable.Inventory));
+        JsonBody.WriteTo(sender);
+        Content.WriteFrom(sender);
         content.GetHeaders(contentHeaders);
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://192.168.96.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products/' + ItemId, Content, Response);
     end;
 }
 /// <summary>
