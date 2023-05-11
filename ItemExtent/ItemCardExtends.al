@@ -50,7 +50,7 @@ pageextension 50135 ItemCardExtends extends "Item Card"
                 var
                     webout: Codeunit WebOut;
                 begin
-                    webout.ItenStock(rec."No.");
+                    webout.IteMStock(rec."No.");
                 end;
             }
 

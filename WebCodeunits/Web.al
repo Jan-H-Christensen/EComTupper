@@ -39,11 +39,16 @@ codeunit 50133 WebOut
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
         Client.Post('http://192.168.96.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+
         Response.Content.ReadAs(test);
+
         Message(test);
+
+        ItemTable.WoocommerceId := '';
+        ItemTable.Modify();
     end;
 
-    procedure ItenStock(Info: Text)
+    procedure ItemStock(Info: Text)
     var
         ItemTable: Record Item;
         Client: HttpClient;
@@ -82,22 +87,41 @@ codeunit 50134 WebIn
     begin
         MainJsonObject.ReadFrom(Info);
 
-        CustTable.Init();
-        CustTable."No." := Json.getFileIdTextAsText(MainJsonObject, 'id');
-        CustTable."E-Mail" := Json.getFileIdTextAsText(MainJsonObject, 'email');
-        CustTable.Name := Json.getFileIdTextAsText(MainJsonObject, 'first_name') + ' ' + Json.getFileIdTextAsText(MainJsonObject, 'last_name');
+        CustTable.SetFilter("No.", json.getFileIdTextAsText(MainJsonObject, 'id'));
 
-        MainJsonObject.Get('billing', BillingJsonToken);
+        if not CustTable.FindSet() then begin
+            CustTable.Init();
+            CustTable."No." := Json.getFileIdTextAsText(MainJsonObject, 'id');
+            CustTable."E-Mail" := Json.getFileIdTextAsText(MainJsonObject, 'email');
+            CustTable.Name := Json.getFileIdTextAsText(MainJsonObject, 'first_name') + ' ' + Json.getFileIdTextAsText(MainJsonObject, 'last_name');
 
-        CustTable.Address := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), '"address_1');
-        CustTable.County := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'country');
-        CustTable."Post Code" := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'postcode');
-        CustTable.City := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'city');
-        CustTable."Phone No." := json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'phone');
+            MainJsonObject.Get('billing', BillingJsonToken);
 
-        CustTable.Insert();
+            CustTable.Address := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), '"address_1');
+            CustTable.County := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'country');
+            CustTable."Post Code" := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'postcode');
+            CustTable.City := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'city');
+            CustTable."Phone No." := json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'phone');
 
-        Email.NewCusEmail(CustTable."No.");
+            CustTable.Insert();
+
+            Email.NewCusEmail(CustTable."No.");
+        end else begin
+            CustTable.SetFilter("No.", Json.getFileIdTextAsText(MainJsonObject, 'id'));
+            CustTable.FindFirst();
+            CustTable."E-Mail" := Json.getFileIdTextAsText(MainJsonObject, 'email');
+            CustTable.Name := Json.getFileIdTextAsText(MainJsonObject, 'first_name') + ' ' + Json.getFileIdTextAsText(MainJsonObject, 'last_name');
+
+            MainJsonObject.Get('billing', BillingJsonToken);
+
+            CustTable.Address := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), '"address_1');
+            CustTable.County := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'country');
+            CustTable."Post Code" := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'postcode');
+            CustTable.City := Json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'city');
+            CustTable."Phone No." := json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'phone');
+
+            CustTable.Modify();
+        end;
     end;
 
     procedure NewSalesOrder(Info: Text)
@@ -105,6 +129,7 @@ codeunit 50134 WebIn
         SalesHeaderRec: Record "Sales Header";
         SalesLineRec: Record "Sales Line";
         CustTable: Record Customer;
+        ItemTable: Record Item;
         Email: Codeunit EmailController;
         Json: Codeunit JsonContoller;
         MainJsonObject: JsonObject;
@@ -117,6 +142,7 @@ codeunit 50134 WebIn
         TypeDate: Date;
         OrderDate: Text;
         ValQuant: Decimal;
+        woocommerceID: code[20];
     begin
         MainJsonObject.ReadFrom(Info);
         MainJsonObject.Get('billing', CostJsonToken);
@@ -159,7 +185,10 @@ codeunit 50134 WebIn
         foreach ArryToken in JsonArryItem do begin
             SalesLineRec."Document No." := SalesHeaderRec."No.";
             SalesLineRec.Type := "Sales Line Type".FromInteger(2);
-            SalesLineRec."No." := Json.getFileIdTextAsText(ArryToken.AsObject(), 'product_id');
+            woocommerceID := Json.getFileIdTextAsText(ArryToken.AsObject(), 'product_id');
+            ItemTable.SetFilter(WoocommerceId, woocommerceID);
+            ItemTable.FindFirst();
+            SalesLineRec."No." := ItemTable."No.";
             Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
             SalesLineRec.Insert();
