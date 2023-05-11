@@ -100,13 +100,13 @@ codeunit 50134 WebIn
         stringSplit: list of [text];
         endtext: Text;
     begin
+
         Info := info.Replace('\r\n', '');
         Info := info.Replace('\', '');
         stringSplit := Info.Split('avatar_url');
         endtext := DelChr(stringSplit.Get(1), '>', ', "');
 
         Message(endtext + '}');
-
         MainJsonObject.ReadFrom(endtext + '}');
         Message('Made It');
         CustTable.SetFilter("No.", json.getFileIdTextAsText(MainJsonObject, 'id'));
