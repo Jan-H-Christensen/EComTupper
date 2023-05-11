@@ -11,6 +11,8 @@ codeunit 50137 "Charts Manager"
         item: Record 27;
         sales: Record "Sales Line";
         catogory: Text;
+        totalProfit: Decimal;
+        totalQuantity: Decimal;
         i: Integer;
     begin
         catogory := '';
@@ -29,19 +31,25 @@ codeunit 50137 "Charts Manager"
 
             if item.FindSet() then begin
                 repeat
+                    sales.SetFilter("No.", item."No.");
                     if sales.FindSet() then begin
                         repeat
-                            if sales."No." = item."No." then begin
-                                AddColumn((item."No."));
-                                if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
-                                    SetValueByIndex(0, i, item."Unit Price")
-                                else
-                                    SetValueByIndex(0, i, item."Unit Cost");
-                                i += 1;
-                            end;
+                            totalProfit += sales.Quantity * item."Unit Price";
+                            totalQuantity += sales.Quantity;
+
                         until sales.Next() = 0;
                     end;
-                until (item.Next() = 0) OR (i >= 10);
+                    if not (totalProfit = 0) then begin
+                        AddColumn((item."No."));
+                        if chartsToShow."Show Profit or Sales" = chartsToShow."Show Profit or Sales"::"Product by Profit" then
+                            SetValueByIndex(0, i, totalProfit)
+                        else
+                            SetValueByIndex(0, i, totalQuantity);
+                        i += 1;
+                    end;
+                    totalProfit := 0;
+                    totalQuantity := 0;
+                until (item.Next() = 0);
             end;
         end;
     end;
