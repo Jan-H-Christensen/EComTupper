@@ -7,6 +7,7 @@ page 50133 "Tupper Sales Charts"
 
     layout
     {
+
         area(Content)
         {
             group(General)
@@ -76,6 +77,24 @@ page 50133 "Tupper Sales Charts"
                         UpdateChart();
                     end;
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Navigation)
+        {
+            action("My Action")
+            {
+                ApplicationArea = All;
+
+                trigger OnAction()
+                var
+                    codeunitss: Codeunit 50134;
+                begin
+                    codeunitss.NewSalesOrder('');
+                end;
             }
         }
     }

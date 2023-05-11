@@ -90,7 +90,7 @@ codeunit 50133 WebOut
 /// </summary>
 codeunit 50134 WebIn
 {
-    local procedure NewCustomer(Info: Text)
+    procedure NewCustomer(Info: Text) result: Boolean
     var
         CustTable: Record Customer;
         Email: Codeunit EmailController;
@@ -134,7 +134,9 @@ codeunit 50134 WebIn
             CustTable."Phone No." := json.getFileIdTextAsText(BillingJsonToken.AsObject(), 'phone');
 
             CustTable.Modify();
+
         end;
+        result := true;
     end;
 
     procedure NewSalesOrder(Info: Text)
@@ -180,7 +182,7 @@ codeunit 50134 WebIn
 
         OrderDate := Json.getFileIdTextAsText(MainJsonObject, 'date_created');
         OrderDate := CopyStr(OrderDate, 9, 2) + CopyStr(OrderDate, 6, 2) + CopyStr(OrderDate, 1, 4);
-        Evaluate(TypeDate, OrderDate);
+        Evaluate(TypeDate, '01-01-2023');
 
         SalesHeaderRec."Order Date" := TypeDate;
         SalesHeaderRec."Posting Date" := TypeDate;
