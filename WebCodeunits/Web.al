@@ -97,9 +97,18 @@ codeunit 50134 WebIn
         Json: Codeunit JsonContoller;
         MainJsonObject: JsonObject;
         BillingJsonToken: JsonToken;
+        stringSplit: list of [text];
+        endtext: Text;
     begin
-        MainJsonObject.ReadFrom(Info);
+        Info := info.Replace('\r\n', '');
+        Info := info.Replace('\', '');
+        stringSplit := Info.Split('avatar_url');
+        endtext := DelChr(stringSplit.Get(1), '>', ', "');
 
+        Message(endtext + '}');
+
+        MainJsonObject.ReadFrom(endtext + '}');
+        Message('Made It');
         CustTable.SetFilter("No.", json.getFileIdTextAsText(MainJsonObject, 'id'));
 
         if not CustTable.FindSet() then begin
