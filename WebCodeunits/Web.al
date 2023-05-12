@@ -82,6 +82,9 @@ codeunit 50133 WebOut
         ItemId := ItemTable.WoocommerceId;
         ItemTable.CalcFields(Inventory);
         JsonBody.Add('name', ItemTable.Description);
+        JsonBody.Add('regular_price', Format(ItemTable."Unit Price"));
+        JsonBody.Add('description', ItemTable.ItemDeskription);
+        JsonBody.Add('short_description', ItemTable.ItemDeskription);
         JsonBody.Add('stock_quantity', Format(ItemTable.Inventory));
         JsonBody.WriteTo(sender);
         Content.WriteFrom(sender);
