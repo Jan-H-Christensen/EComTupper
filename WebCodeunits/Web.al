@@ -28,27 +28,34 @@ codeunit 50133 WebOut
 
         ItemTable.SetFilter("No.", itemId);
         ItemTable.FindFirst();
-        ItemTable.CalcFields(Inventory);
-        MainObject.Add('name', ItemTable.Description);
-        MainObject.Add('regular_price', Format(ItemTable."Unit Price"));
-        MainObject.Add('description', ItemTable.ItemDeskription);
-        MainObject.Add('short_description', ItemTable.ItemDeskription);
-        MainObject.Add('manage_stock', true);
-        MainObject.Add('stock_quantity', Format(ItemTable.Inventory));
-        MainObject.WriteTo(sender);
 
-        Content.WriteFrom(sender);
-        content.GetHeaders(contentHeaders);
-        contentHeaders.Clear();
-        contentHeaders.Add('Content-Type', 'application/json');
-        client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+        if (ItemTable.WoocommerceId = '') then begin
 
-        Response.Content.ReadAs(RespText);
-        jsonObjectResp.ReadFrom(RespText);
+            ItemTable.CalcFields(Inventory);
+            MainObject.Add('name', ItemTable.Description);
+            MainObject.Add('regular_price', Format(ItemTable."Unit Price"));
+            MainObject.Add('description', ItemTable.ItemDeskription);
+            MainObject.Add('short_description', ItemTable.ItemDeskription);
+            MainObject.Add('manage_stock', true);
+            MainObject.Add('stock_quantity', Format(ItemTable.Inventory));
+            MainObject.WriteTo(sender);
 
-        ItemTable.WoocommerceId := json.getFileIdTextAsText(jsonObjectResp, 'id');
-        ItemTable.Modify();
+            Content.WriteFrom(sender);
+            content.GetHeaders(contentHeaders);
+            contentHeaders.Clear();
+            contentHeaders.Add('Content-Type', 'application/json');
+            client.DefaultRequestHeaders.Add('Authorization', authent);
+            Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+
+            Response.Content.ReadAs(RespText);
+            jsonObjectResp.ReadFrom(RespText);
+
+            ItemTable.WoocommerceId := json.getFileIdTextAsText(jsonObjectResp, 'id');
+            ItemTable.Modify();
+        end
+        else begin
+            Message('Product already exists please use update');
+        end;
     end;
 
     procedure ItemStock(Info: Code[20])
