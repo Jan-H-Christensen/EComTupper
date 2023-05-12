@@ -174,6 +174,7 @@ codeunit 50134 WebIn
         endtext: Text;
         stringSplit: List of [Text];
         ValQuant: Decimal;
+        Subtotal: Decimal;
         woocommerceIDtemp: code[20];
         caunter: Integer;
     begin
@@ -226,11 +227,10 @@ codeunit 50134 WebIn
 
         SalesHeaderRec.Insert();
 
-        SalesLineRec.Init();
-
         JsonArryItem := Json.getFileIdTextAsJSArray(MainJsonObject, 'line_items');
         caunter := 1;
         foreach ArryToken in JsonArryItem do begin
+            SalesLineRec.Init();
             SalesLineRec."Document Type" := "Sales Document Type".FromInteger(1);
             SalesLineRec."Document No." := SalesHeaderRec."No."; // some thing went wrong her
 
@@ -245,10 +245,11 @@ codeunit 50134 WebIn
             SalesLineRec."Sell-to Customer No." := CustTable."No.";
             SalesLineRec.Description := ItemTable.Description;
             SalesLineRec."Unit Price" := ItemTable."Unit Price";
+            Evaluate(Subtotal, Json.getFileIdTextAsText(ArryToken.AsObject(), 'subtotal'));
+            SalesLineRec."Line Amount" := Subtotal;
             SalesLineRec.Insert();
 
-            SalesLineRec."Line Amount" := SalesLineRec.CalcLineAmount();
-            SalesLineRec.Modify();
+
             caunter += 1;
         end;
         Email.NewOrderEmail(SalesHeaderRec."No.");
