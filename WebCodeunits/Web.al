@@ -165,13 +165,25 @@ codeunit 50134 WebIn
         CusId: Text;
         TypeDate: Date;
         OrderDate: Text;
+        endtext: Text;
+        stringSplit: List of [Text];
         ValQuant: Decimal;
         woocommerceID: code[20];
     begin
-        MainJsonObject.ReadFrom(Info);
+
+        Info := info.Replace('\r\n', '');
+        Info := info.Replace('\', '');
+        stringSplit := Info.Split('avatar_url');
+        endtext := DelChr(stringSplit.Get(1), '>', '"}}, "');
+        Message(endtext + '}}');
+
+        MainJsonObject.ReadFrom(endtext + '}}');
+
         MainJsonObject.Get('billing', CostJsonToken);
 
         SalesHeaderRec.Init();
+        SalesHeaderRec."Document Type" := "Sales Document Type".FromInteger(1);
+        SalesHeaderRec."No." := Json.getFileIdTextAsText(MainJsonObject, 'id');
         CusId := json.getFileIdTextAsText(MainJsonObject, 'customer_id');
         CustTable.SetFilter("No.", CusId);
         CustTable.FindFirst();
@@ -201,13 +213,14 @@ codeunit 50134 WebIn
         SalesHeaderRec.Status := "Sales Document Status".FromInteger(0);
 
         SalesHeaderRec.Insert();
-
+        Message(SalesHeaderRec."No.");
         SalesLineRec.Init();
 
         JsonArryItem := Json.getFileIdTextAsJSArray(MainJsonObject, 'line_items');
 
         foreach ArryToken in JsonArryItem do begin
-            SalesLineRec."Document No." := SalesHeaderRec."No.";
+            SalesLineRec."Document Type" := "Sales Document Type".FromInteger(1);
+            SalesLineRec."Document No." := SalesHeaderRec."No."; // some thing went wrong her
             SalesLineRec.Type := "Sales Line Type".FromInteger(2);
             woocommerceID := Json.getFileIdTextAsText(ArryToken.AsObject(), 'product_id');
             ItemTable.SetFilter(WoocommerceId, woocommerceID);
@@ -216,6 +229,7 @@ codeunit 50134 WebIn
             Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
             SalesLineRec.Insert();
+
         end;
         Email.NewOrderEmail(SalesHeaderRec."No.");
     end;
