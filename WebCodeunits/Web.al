@@ -246,6 +246,9 @@ codeunit 50134 WebIn
             SalesLineRec.Description := ItemTable.Description;
             SalesLineRec."Unit Price" := ItemTable."Unit Price";
             SalesLineRec.Insert();
+
+            SalesLineRec."Line Amount" := SalesLineRec.CalcLineAmount();
+            SalesLineRec.Modify();
             caunter += 1;
         end;
         Email.NewOrderEmail(SalesHeaderRec."No.");
