@@ -221,6 +221,7 @@ codeunit 50134 WebIn
         foreach ArryToken in JsonArryItem do begin
             SalesLineRec."Document Type" := "Sales Document Type".FromInteger(1);
             SalesLineRec."Document No." := SalesHeaderRec."No."; // some thing went wrong her
+
             SalesLineRec.Type := "Sales Line Type".FromInteger(2);
             woocommerceID := Json.getFileIdTextAsText(ArryToken.AsObject(), 'product_id');
             ItemTable.SetFilter(WoocommerceId, woocommerceID);
