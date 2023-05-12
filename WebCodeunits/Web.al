@@ -42,7 +42,7 @@ codeunit 50133 WebOut
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://172.24.112.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
 
         Response.Content.ReadAs(RespText);
         jsonObjectResp.ReadFrom(RespText);
@@ -81,7 +81,7 @@ codeunit 50133 WebOut
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://172.24.112.1:80/wordpress/wp-json/wc/v2/products/' + ItemId, Content, Response);
+        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products/' + ItemId, Content, Response);
     end;
 }
 /// <summary>
@@ -128,7 +128,10 @@ codeunit 50134 WebIn
 
             CustTable.Insert();
 
+            CustTable.SetFilter("No.", Json.getFileIdTextAsText(MainJsonObject, 'id'));
+            CustTable.FindFirst();
             Email.NewCusEmail(CustTable."No.");
+
         end else begin
             CustTable.SetFilter("No.", Json.getFileIdTextAsText(MainJsonObject, 'id'));
             CustTable.FindFirst();
@@ -183,7 +186,6 @@ codeunit 50134 WebIn
         Info := info.Replace('\', '');
         stringSplit := Info.Split('avatar_url');
         endtext := DelChr(stringSplit.Get(1), '>', '"}}, "');
-        Message(endtext + '}}');
 
         MainJsonObject.ReadFrom(endtext + '}}');
 
@@ -242,6 +244,9 @@ codeunit 50134 WebIn
             SalesLineRec."No." := ItemTable."No.";
             Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
+            SalesLineRec."Unit of Measure" := 'STK';
+            SalesLineRec."Qty. to Ship" := ValQuant;
+            SalesLineRec."Qty. to Invoice" := ValQuant;
             SalesLineRec."Sell-to Customer No." := CustTable."No.";
             SalesLineRec.Description := ItemTable.Description;
             SalesLineRec."Unit Price" := ItemTable."Unit Price";
