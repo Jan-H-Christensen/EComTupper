@@ -15,7 +15,7 @@ codeunit 50137 "Charts Manager"
         totalQuantity: Decimal;
         i: Integer;
     begin
-        catogory := '';
+        catogory := 'TUPPER';
         with buffer do begin
             Initialize();
 
