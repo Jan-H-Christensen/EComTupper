@@ -201,6 +201,7 @@ codeunit 50134 WebIn
         SalesHeaderRec."Bill-to City" := CustTable.City;
         SalesHeaderRec."Bill-to Post Code" := CustTable."Post Code";
 
+        SalesHeaderRec."Sell-to Customer No." := CustTable."No.";
         SalesHeaderRec."Sell-to Customer Name" := CustTable.Name;
         SalesHeaderRec."Sell-to Address" := CustTable.Address;
         SalesHeaderRec."Sell-to City" := CustTable.City;
