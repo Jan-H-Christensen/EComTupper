@@ -240,6 +240,9 @@ codeunit 50134 WebIn
             SalesLineRec."No." := ItemTable."No.";
             Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
+            SalesLineRec."Sell-to Customer No." := CustTable."No.";
+            SalesLineRec.Description := ItemTable.Description;
+            SalesLineRec."Unit Price" := ItemTable."Unit Price";
             SalesLineRec.Insert();
             caunter += 1;
         end;
