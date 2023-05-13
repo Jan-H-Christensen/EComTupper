@@ -62,7 +62,9 @@ codeunit 50135 EmailController
 
         if linetable.FindSet() then
             repeat
-                Body += 'Item: ' + linetable.Description + ' | Amount: ' + Format(linetable.Quantity) + ' | Price: ' + Format(linetable."Line Amount") + Format(cr);
+                Body += 'Item: ' + linetable.Description
+                        + ' | Amount: ' + Format(linetable.Quantity)
+                        + ' | Price: ' + Format(linetable."Line Amount") + Format(cr);
             until linetable.Next() = 0;
 
         Body += 'looking forwart to your futur transactions' + Format(cr)
