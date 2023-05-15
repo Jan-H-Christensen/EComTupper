@@ -45,7 +45,7 @@ codeunit 50133 WebOut
             contentHeaders.Clear();
             contentHeaders.Add('Content-Type', 'application/json');
             client.DefaultRequestHeaders.Add('Authorization', authent);
-            Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
+            Client.Post('http://172.24.112.1:80/wordpress/wp-json/wc/v2/products', Content, Response);
 
             Response.Content.ReadAs(RespText);
             jsonObjectResp.ReadFrom(RespText);
@@ -92,7 +92,7 @@ codeunit 50133 WebOut
         contentHeaders.Clear();
         contentHeaders.Add('Content-Type', 'application/json');
         client.DefaultRequestHeaders.Add('Authorization', authent);
-        Client.Post('http://172.18.128.1:80/wordpress/wp-json/wc/v2/products/' + ItemId, Content, Response);
+        Client.Post('http://172.24.112.1:80/wordpress/wp-json/wc/v2/products/' + ItemId, Content, Response);
     end;
 }
 /// <summary>
@@ -170,6 +170,7 @@ codeunit 50134 WebIn
 
     procedure NewSalesOrder(Info: Text)
     var
+        fg: page "Sales Order";
         SalesHeaderRec: Record "Sales Header";
         SalesLineRec: Record "Sales Line";
         CustTable: Record Customer;
@@ -231,6 +232,12 @@ codeunit 50134 WebIn
         OrderDate := CopyStr(OrderDate, 9, 2) + CopyStr(OrderDate, 6, 2) + CopyStr(OrderDate, 1, 4);
         Evaluate(TypeDate, '01-01-2023');
 
+        SalesHeaderRec."Document Date" := TypeDate;
+        SalesHeaderRec."Due Date" := TypeDate;
+        SalesHeaderRec."VAT Reporting Date" := TypeDate;
+        SalesHeaderRec."Requested Delivery Date" := TypeDate;
+        SalesHeaderRec."Prepayment Due Date" := TypeDate;
+        SalesHeaderRec."Prepmt. Pmt. Discount Date" := TypeDate;
         SalesHeaderRec."Order Date" := TypeDate;
         SalesHeaderRec."Posting Date" := TypeDate;
         SalesHeaderRec."Shipment Date" := TypeDate;
@@ -256,6 +263,8 @@ codeunit 50134 WebIn
             Evaluate(ValQuant, Json.getFileIdTextAsText(ArryToken.AsObject(), 'quantity'));
             SalesLineRec.Quantity := ValQuant;
             SalesLineRec."Unit of Measure" := 'STK';
+            SalesLineRec."Gen. Bus. Posting Group" := 'EU';
+            SalesLineRec."Gen. Prod. Posting Group" := 'TUPPER';
             SalesLineRec."Qty. to Ship" := ValQuant;
             SalesLineRec."Qty. to Invoice" := ValQuant;
             SalesLineRec."Sell-to Customer No." := CustTable."No.";
@@ -263,8 +272,8 @@ codeunit 50134 WebIn
             SalesLineRec."Unit Price" := ItemTable."Unit Price";
             Evaluate(Subtotal, Json.getFileIdTextAsText(ArryToken.AsObject(), 'subtotal'));
             SalesLineRec."Line Amount" := Subtotal;
+            SalesLineRec."Location Code" := 'BLÅ';
             SalesLineRec.Insert();
-
 
             caunter += 1;
         end;
